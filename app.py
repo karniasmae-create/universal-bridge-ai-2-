@@ -66,9 +66,14 @@ if 'detected_info' not in st.session_state: st.session_state.detected_info = Non
 def load_essentials():
     # Traduction NLLB
     nllb_model_name = "facebook/nllb-200-distilled-600M"
-    n_tokenizer = AutoTokenizer.from_pretrained(nllb_model_name)
-    n_model = AutoModelForSeq2SeqLM.from_pretrained(nllb_model_name)
-    
+    n_tokenizer = AutoTokenizer.from_pretrained(
+    nllb_model_name,
+    use_fast=False
+)
+n_model = AutoModelForSeq2SeqLM.from_pretrained(
+    nllb_model_name,
+    torch_dtype=torch.float32
+)   
     # OCR
     ocr_reader = easyocr.Reader(['fr', 'en', 'tr', 'es']) 
     
@@ -208,4 +213,5 @@ with col2:
 
 with st.expander("📜 Historique"):
     for item in reversed(st.session_state.history):
+
         st.write(f"*{item['lang']}*: {item['res']}")
