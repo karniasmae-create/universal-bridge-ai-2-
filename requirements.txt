@@ -1,7 +1,8 @@
 streamlit
-torch==2.2.2
 transformers==4.38.2
 tokenizers==0.15.2
+torch
+sentencepiece
 easyocr
 pillow
 langdetect
@@ -11,4 +12,3 @@ edge-tts
 python-docx
 pymupdf
 numpy
-sentencepiece
