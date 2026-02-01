@@ -67,21 +67,19 @@ def load_essentials():
     # Traduction NLLB
     nllb_model_name = "facebook/nllb-200-distilled-600M"
     n_tokenizer = AutoTokenizer.from_pretrained(
-    nllb_model_name,
-    use_fast=False
-)
-n_model = AutoModelForSeq2SeqLM.from_pretrained(
-    nllb_model_name,
-    torch_dtype=torch.float32
-)   
+        nllb_model_name,
+        use_fast=False
+    )
+    n_model = AutoModelForSeq2SeqLM.from_pretrained(nllb_model_name)
+
     # OCR
-    ocr_reader = easyocr.Reader(['fr', 'en', 'tr', 'es']) 
-    
+    ocr_reader = easyocr.Reader(['fr', 'en', 'tr', 'es'])
+
     # Chatbot Multilingue (Blenderbot)
     chat_model_name = "facebook/blenderbot-400M-distill"
     c_tokenizer = AutoTokenizer.from_pretrained(chat_model_name)
     c_model = AutoModelForSeq2SeqLM.from_pretrained(chat_model_name)
-    
+
     return n_tokenizer, n_model, ocr_reader, c_tokenizer, c_model
 
 tokenizer, model, reader, chat_tokenizer, chat_model = load_essentials()
@@ -215,3 +213,4 @@ with st.expander("📜 Historique"):
     for item in reversed(st.session_state.history):
 
         st.write(f"*{item['lang']}*: {item['res']}")
+
