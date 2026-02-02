@@ -65,17 +65,19 @@ if 'detected_info' not in st.session_state: st.session_state.detected_info = Non
 
 @st.cache_resource
 def load_essentials():
-    # Modèle Traduction NLLB - Ajout de torch_dtype
+    # Modèle Traduction NLLB
     nllb_model_name = "facebook/nllb-200-distilled-600M"
     n_tokenizer = AutoTokenizer.from_pretrained(nllb_model_name)
-   n_model = AutoModelForSeq2SeqLM.from_pretrained(nllb_model_name, torch_dtype=torch.float16)
+    # Correction : ajout de float16
+    n_model = AutoModelForSeq2SeqLM.from_pretrained(nllb_model_name, torch_dtype=torch.float16)
     
     # OCR
     ocr_reader = easyocr.Reader(['fr', 'en', 'tr', 'es']) 
     
-    # Chatbot - Ajout de torch_dtype
+    # Chatbot Multilingue (Blenderbot)
     chat_model_name = "facebook/blenderbot-400M-distill"
     c_tokenizer = AutoTokenizer.from_pretrained(chat_model_name)
+    # Correction : ajout de float16 et AutoModelForSeq2SeqLM (Blenderbot est de ce type)
     c_model = AutoModelForSeq2SeqLM.from_pretrained(chat_model_name, torch_dtype=torch.float16)
     
     return n_tokenizer, n_model, ocr_reader, c_tokenizer, c_model
@@ -228,4 +230,5 @@ with col2:
 with st.expander("📜 Historique des traductions"):
     for item in reversed(st.session_state.history):
         st.write(f"**{item['lang']}**: {item['res']}")
+
 
