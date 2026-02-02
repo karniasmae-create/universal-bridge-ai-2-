@@ -6,6 +6,9 @@ protobuf
 easyocr
 folium
 streamlit-folium
+python-docx
+pymupdf
 edge-tts
 Pillow
 numpy
+langdetect
