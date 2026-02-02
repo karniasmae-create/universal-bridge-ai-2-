@@ -68,7 +68,7 @@ def load_essentials():
     # Modèle Traduction NLLB - Ajout de torch_dtype
     nllb_model_name = "facebook/nllb-200-distilled-600M"
     n_tokenizer = AutoTokenizer.from_pretrained(nllb_model_name)
-    n_model = AutoModelForSeq2SeqLM.from_pretrained(nllb_model_name, torch_dtype=torch.float16)
+   n_model = AutoModelForSeq2SeqLM.from_pretrained(nllb_model_name, torch_dtype=torch.float16)
     
     # OCR
     ocr_reader = easyocr.Reader(['fr', 'en', 'tr', 'es']) 
@@ -228,3 +228,4 @@ with col2:
 with st.expander("📜 Historique des traductions"):
     for item in reversed(st.session_state.history):
         st.write(f"**{item['lang']}**: {item['res']}")
+
