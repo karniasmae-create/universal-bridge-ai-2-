@@ -1,14 +1,11 @@
 streamlit
-transformers==4.38.2
-tokenizers==0.15.2
+transformers
 torch
 sentencepiece
+protobuf
 easyocr
-pillow
-langdetect
 folium
 streamlit-folium
 edge-tts
-python-docx
-pymupdf
+Pillow
 numpy
