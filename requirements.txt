@@ -1,5 +1,7 @@
 streamlit
 transformers>=4.30.0
+sentencepiece
+sacremoses
 torch --index-url https://download.pytorch.org/whl/cpu
 edge-tts
 easyocr
