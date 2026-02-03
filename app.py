@@ -65,19 +65,18 @@ if 'detected_info' not in st.session_state: st.session_state.detected_info = Non
 
 @st.cache_resource
 def load_essentials():
-    # 1. Modèle Traduction NLLB
+    # Modèle Traduction NLLB (on garde le même mais on force le CPU)
     nllb_model_name = "facebook/nllb-200-distilled-600M"
     n_tokenizer = AutoTokenizer.from_pretrained(nllb_model_name)
-    # L'ajout de torch.float16 divise par 2 l'usage de la RAM
-    n_model = AutoModelForSeq2SeqLM.from_pretrained(nllb_model_name, torch_dtype=torch.float16)
+    n_model = AutoModelForSeq2SeqLM.from_pretrained(nllb_model_name, low_cpu_mem_usage=True)
     
-    # 2. OCR
-    ocr_reader = easyocr.Reader(['fr', 'en', 'tr', 'es']) 
+    # OCR
+    ocr_reader = easyocr.Reader(['fr', 'en', 'tr', 'es'], gpu=False) 
     
-    # 3. Chatbot Blenderbot (C'est un modèle Seq2Seq, pas CausalLM)
+    # Chatbot : Passage impératif à une version plus petite (90M au lieu de 400M)
     chat_model_name = "facebook/blenderbot_small-90M"
     c_tokenizer = AutoTokenizer.from_pretrained(chat_model_name)
-    c_model = AutoModelForSeq2SeqLM.from_pretrained(chat_model_name, torch_dtype=torch.float16)
+    c_model = AutoModelForSeq2SeqLM.from_pretrained(chat_model_name, low_cpu_mem_usage=True)
     
     return n_tokenizer, n_model, ocr_reader, c_tokenizer, c_model
 
@@ -229,6 +228,7 @@ with col2:
 with st.expander("📜 Historique des traductions"):
     for item in reversed(st.session_state.history):
         st.write(f"**{item['lang']}**: {item['res']}")
+
 
 
 
