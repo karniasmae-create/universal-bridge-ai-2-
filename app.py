@@ -10,7 +10,6 @@ import os
 import base64
 import folium
 from streamlit_folium import st_folium
-from folium.features import DivIcon
 import torch
 import docx
 import fitz  # PyMuPDF
@@ -63,24 +62,30 @@ if 'chat_messages' not in st.session_state: st.session_state.chat_messages = []
 if 'history' not in st.session_state: st.session_state.history = []
 if 'detected_info' not in st.session_state: st.session_state.detected_info = None
 
+st.set_page_config(page_title="Universal Bridge AI", layout="wide")
+
 @st.cache_resource
 def load_essentials():
-    # Modèle Traduction NLLB (on garde le même mais on force le CPU)
-    nllb_model_name = "facebook/nllb-200-distilled-600M"
-    n_tokenizer = AutoTokenizer.from_pretrained(nllb_model_name, use_fast=False)
-    n_model = AutoModelForSeq2SeqLM.from_pretrained(nllb_model_name, low_cpu_mem_usage=True)
+    # Traduction - NLLB (Version Distilled pour économiser la RAM)
+    nllb_model = "facebook/nllb-200-distilled-600M"
+    # use_fast=False est CRUCIAL pour éviter l'AttributeError sur Streamlit Cloud
+    n_tokenizer = AutoTokenizer.from_pretrained(nllb_model, use_fast=False)
+    n_model = AutoModelForSeq2SeqLM.from_pretrained(nllb_model, low_cpu_mem_usage=True)
     
-    # OCR
+    # OCR - On désactive le GPU pour le Cloud
     ocr_reader = easyocr.Reader(['fr', 'en', 'tr', 'es'], gpu=False) 
     
-    # Chatbot : Passage impératif à une version plus petite (90M au lieu de 400M)
+    # Chatbot - Modèle SMALL obligatoire (90M) pour éviter le crash (Signal 9)
     chat_model_name = "facebook/blenderbot_small-90M"
     c_tokenizer = AutoTokenizer.from_pretrained(chat_model_name)
     c_model = AutoModelForSeq2SeqLM.from_pretrained(chat_model_name, low_cpu_mem_usage=True)
-    
     return n_tokenizer, n_model, ocr_reader, c_tokenizer, c_model
-
-tokenizer, model, reader, chat_tokenizer, chat_model = load_essentials()
+# Chargement sécurisé
+try:
+    tokenizer, model, reader, chat_tokenizer, chat_model = load_essentials()
+except Exception as e:
+    st.error(f"Erreur de chargement des modèles : {e}")
+    st.stop()
 
 LANG_CODES = {"Français": "fra_Latn", "Anglais": "eng_Latn", "Turc": "tur_Latn", "Espagnol": "spa_Latn", "Chinois": "zho_Hans", "Coréen": "kor_Hang"}
 VOICE_MAPPING = {
