@@ -75,7 +75,7 @@ def load_essentials():
     ocr_reader = easyocr.Reader(['fr', 'en', 'tr', 'es']) 
     
     # 3. Chatbot Blenderbot (C'est un modèle Seq2Seq, pas CausalLM)
-    chat_model_name = "facebook/blenderbot-400M-distill"
+    chat_model_name = "facebook/blenderbot-90M"
     c_tokenizer = AutoTokenizer.from_pretrained(chat_model_name)
     c_model = AutoModelForSeq2SeqLM.from_pretrained(chat_model_name, torch_dtype=torch.float16)
     
@@ -229,6 +229,7 @@ with col2:
 with st.expander("📜 Historique des traductions"):
     for item in reversed(st.session_state.history):
         st.write(f"**{item['lang']}**: {item['res']}")
+
 
 
 
