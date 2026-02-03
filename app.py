@@ -63,29 +63,32 @@ if 'history' not in st.session_state: st.session_state.history = []
 if 'detected_info' not in st.session_state: st.session_state.detected_info = None
 
 st.set_page_config(page_title="Universal Bridge AI", layout="wide")
-
 @st.cache_resource
 def load_essentials():
-    # Traduction - NLLB (Version Distilled pour économiser la RAM)
+    # 1. TRADUCTION - NLLB
     nllb_model = "facebook/nllb-200-distilled-600M"
-    # use_fast=False est CRUCIAL pour éviter l'AttributeError sur Streamlit Cloud
+    # use_fast=False règle l'AttributeError sur Streamlit Cloud
     n_tokenizer = AutoTokenizer.from_pretrained(nllb_model, use_fast=False)
     n_model = AutoModelForSeq2SeqLM.from_pretrained(nllb_model, low_cpu_mem_usage=True)
     
-    # OCR - On désactive le GPU pour le Cloud
+    # 2. OCR - Sans GPU pour le Cloud
     ocr_reader = easyocr.Reader(['fr', 'en', 'tr', 'es'], gpu=False) 
     
-    # Chatbot - Modèle SMALL obligatoire (90M) pour éviter le crash (Signal 9)
+    # 3. CHATBOT - Passage au modèle "Small" obligatoire pour la RAM
     chat_model_name = "facebook/blenderbot_small-90M"
     c_tokenizer = AutoTokenizer.from_pretrained(chat_model_name)
     c_model = AutoModelForSeq2SeqLM.from_pretrained(chat_model_name, low_cpu_mem_usage=True)
+    
     return n_tokenizer, n_model, ocr_reader, c_tokenizer, c_model
-# Chargement sécurisé
+
+# Chargement avec gestion d'erreur visuelle
 try:
     tokenizer, model, reader, chat_tokenizer, chat_model = load_essentials()
 except Exception as e:
-    st.error(f"Erreur de chargement des modèles : {e}")
+    st.error(f"⚠️ Erreur système : {e}")
+    st.info("Conseil : Supprimez et recréez l'application sur Streamlit Cloud.")
     st.stop()
+
 
 LANG_CODES = {"Français": "fra_Latn", "Anglais": "eng_Latn", "Turc": "tur_Latn", "Espagnol": "spa_Latn", "Chinois": "zho_Hans", "Coréen": "kor_Hang"}
 VOICE_MAPPING = {
@@ -233,6 +236,7 @@ with col2:
 with st.expander("📜 Historique des traductions"):
     for item in reversed(st.session_state.history):
         st.write(f"**{item['lang']}**: {item['res']}")
+
 
 
 
