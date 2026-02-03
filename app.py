@@ -67,7 +67,7 @@ if 'detected_info' not in st.session_state: st.session_state.detected_info = Non
 def load_essentials():
     # Modèle Traduction NLLB (on garde le même mais on force le CPU)
     nllb_model_name = "facebook/nllb-200-distilled-600M"
-    n_tokenizer = AutoTokenizer.from_pretrained(nllb_model_name)
+    n_tokenizer = AutoTokenizer.from_pretrained(nllb_model_name, use_fast=False)
     n_model = AutoModelForSeq2SeqLM.from_pretrained(nllb_model_name, low_cpu_mem_usage=True)
     
     # OCR
@@ -228,6 +228,7 @@ with col2:
 with st.expander("📜 Historique des traductions"):
     for item in reversed(st.session_state.history):
         st.write(f"**{item['lang']}**: {item['res']}")
+
 
 
 
